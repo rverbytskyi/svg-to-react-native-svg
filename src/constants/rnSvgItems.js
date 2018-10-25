@@ -1,0 +1,26 @@
+export default {
+  svg: 'Svg',
+  circle: 'Circle',
+  ellipse: 'Ellipse',
+  g: 'G',
+  text: 'Text',
+  tspan: 'TSpan',
+  textPath: 'TextPath',
+  path: 'Path',
+  polygon: 'Polygon',
+  polyline: 'Polyline',
+  line: 'Line',
+  rect: 'Rect',
+  use: 'Use',
+  image: 'Image',
+  symbol: 'Symbol',
+  defs: 'Defs',
+  linearGradient: 'LinearGradient',
+  radialGradient: 'RadialGradient',
+  stop: 'Stop',
+  clipPath: 'ClipPath',
+  pattern: 'Pattern',
+  mask: 'Mask',
+}
+
+export const defaultExport = 'Svg'

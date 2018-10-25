@@ -1,0 +1,19 @@
+{
+  "name": "svg-to-rn-svg",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "babel-node --inspect src/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-2": "^6.24.1"
+  },
+  "dependencies": {
+    "lodash": "^4.17.11"
+  }
+}
