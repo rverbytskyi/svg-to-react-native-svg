@@ -1,14 +1,9 @@
 import _findIndex from 'lodash/findIndex'
 
-import { importTemplates } from '../constants/template'
+import { importTemplate as template } from '../constants/template'
 import replaceVar from '../utils/replaceVar'
 
-export default function ({ dependencies, type = 'svg' }) {
-  let template = importTemplates[type]
-  if (!template) {
-    console.error(`import type ${type} is not listed in importTemplates`)
-    return 'ERROR: Unsupported type'
-  }
+export default function ({ dependencies }) {
   let packageString = ''
 
   const defaultExportIndex = _findIndex(dependencies, el => template.items[el] === template.defaultExport)
@@ -28,18 +23,18 @@ export default function ({ dependencies, type = 'svg' }) {
   if (defaultExportIndex !== -1) {
     packageString = inlineExport
       ? packageString.concat(', {')
-      : packageString.concat(', {\n\r')
+      : packageString.concat(', {\r\n')
   } else {
     packageString = inlineExport
       ? '{'
-      : '{\n\r'
+      : '{\r\n'
   }
 
   for (let i = 0; i < dependencies.length; i++) {
     if (i !== defaultExportIndex) {
       const pack = inlineExport
         ? ` ${template.items[dependencies[i]]}${i !== dependencies.length - 1 ? ',' : ' }'}`
-        : `\t${template.items[dependencies[i]]}${i !== dependencies.length - 1 ? ',\n\r' : ',\n\r}'}`
+        : `\t${template.items[dependencies[i]]}${i !== dependencies.length - 1 ? ',\r\n' : ',\r\n}'}`
       packageString = packageString.concat(pack)
     }
   }

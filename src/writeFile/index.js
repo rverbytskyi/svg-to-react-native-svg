@@ -1,45 +1,60 @@
-import { importTemplates } from '../constants/template'
+import _reduce from 'lodash/reduce'
+import _findIndex from 'lodash/findIndex'
+
 import format from '../format'
 import { fileTemplate, templateVars } from '../constants/template'
+import Ast from './Ast'
 
-export function transformFile(file, extension) {
+export function transformFile(file) {
+  const svgAst = processSvg(file)
+  console.log(JSON.stringify(svgAst.content))
   const values = {
     [templateVars[0]]: format[templateVars[0]]({
-      dependencies: extractImports(file, extension),
-      type: extension,
+      dependencies: svgAst.info.imports,
     }),
-    [templateVars[1]]: 'svg',
+    [templateVars[1]]: 'svgPart',
   }
+  const tabs = getTabs(_findIndex(templateVars, el => el === 'transformedSvg'))
   let varsCounter = 0
   let resString = ''
   for (let i = 0; i < fileTemplate.length; i++) {
     if (fileTemplate[i] !== null) {
-      resString = resString.concat(fileTemplate[i])
+      resString = `${resString}${fileTemplate[i]}`
     } else if (templateVars[varsCounter] === 'transformedSvg') {
-      resString = resString.concat(values[templateVars[varsCounter]])
+      resString = `${resString}${values[templateVars[varsCounter]]}`
       varsCounter++
     } else if (templateVars[varsCounter]) {
-      resString = resString.concat(values[templateVars[varsCounter]])
+      resString = `${resString}${values[templateVars[varsCounter]]}`
       varsCounter++
     }
   }
-  console.log(resString)
+  // console.log(resString)
 }
 
-function extractImports(file, extension) {
-  const template = importTemplates[extension]
-  const variables = []
-  if (!template) {
-    console.error(`import type ${extension} is not listed in importTemplates`)
-    return variables
+function getTabs(varIndex) {
+  if (varIndex === -1) {
+    return ''
   }
-  for (let i = 0; i < Object.keys(template.items).length; i++) {
-    const key = Object.keys(template.items)[i]
-    const regString = `<${key}`
-    const regExp = new RegExp(regString, 'gm')
-    if (regExp.test(file)) {
-      variables.push(key)
-    }
-  }
-  return variables
+  const placeIndex = _reduce(
+    fileTemplate,
+    (acc, el, index) => el === null
+      ? [...acc, index]
+      : acc,
+    [],
+  )[varIndex]
+  return placeIndex === 0
+    ? ''
+    : `${/^\t*/gm.exec(fileTemplate[placeIndex - 1])[0]}\t`
+}
+
+function processSvg(file) {
+  let svgPart = removeHeader(file)
+  const svgArray = svgPart.split(/(?=<)|(?=\/>)/)
+  const SvgAst = new Ast(svgArray)
+  SvgAst.createAst()
+  return SvgAst.svgAst
+}
+
+function removeHeader(file) {
+  return /(?<=^.*)<svg[\s\S]*/gm.exec(file)[0]
 }

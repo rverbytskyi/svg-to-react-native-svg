@@ -1,30 +1,30 @@
 import svgItems, { defaultExport as svgDefaultExport } from '../constants/rnSvgItems'
 
 export const fileTemplate = [
-  'import React from \'react\'\n\r',
+  'import React from \'react\'\r\n',
   null,
-  '\n\r',
-  'import defaultType from \'./Icon.types\'\n\r',
-  '\n\r',
-  'const ORIGINAL_WIDTH = {{{original_width}}}\n\r',
-  '\n\r',
-  'const icon = (props) => {\n\r',
-  '\tconst {\n\r',
-  '\t\twidth\n\r',
-  '\t\theight\n\r',
-  '\t\tfill\n\r',
-  '\t} = props\n\r',
-  '\n\r',
-  '\tconst scale = width / ORIGINAL_WIDTH\n\r',
-  '\n\r',
-  '\treturn (\n\r',
+  '\r\n',
+  'import defaultType from \'./Icon.types\'\r\n',
+  '\r\n',
+  'const ORIGINAL_WIDTH = {{{original_width}}}\r\n',
+  '\r\n',
+  'const icon = (props) => {\r\n',
+  '\tconst {\r\n',
+  '\t\twidth\r\n',
+  '\t\theight\r\n',
+  '\t\tfill\r\n',
+  '\t} = props\r\n',
+  '\r\n',
+  '\tconst scale = width / ORIGINAL_WIDTH\r\n',
+  '\r\n',
+  '\treturn (\r\n',
   null,
-  '\t)\n\r',
-  '}\n\r',
-  '\n\r',
-  'icon.propTypes = defaultType\n\r',
-  '\n\r',
-  'export default icon\n\r',
+  '\t)\r\n',
+  '}\r\n',
+  '\r\n',
+  'icon.propTypes = defaultType\r\n',
+  '\r\n',
+  'export default icon\r\n',
 ]
 
 export const templateVars = [
@@ -32,10 +32,8 @@ export const templateVars = [
   'transformedSvg'
 ]
 
-export const importTemplates = {
-  svg: {
-    value: 'import var:packageString from \'react-native-svg\'\r\n',
-    items: svgItems,
-    defaultExport: svgDefaultExport,
-  }
+export const importTemplate = {
+  value: 'import var:packageString from \'react-native-svg\'\r\n',
+  items: svgItems,
+  defaultExport: svgDefaultExport,
 }
