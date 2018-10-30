@@ -1,10 +1,18 @@
-export default function (str) {
-  const cleanStr = str.replace(/<\w*\s|>|\/>/gm, '')
-  const variables = cleanStr.split(/(?<=\s)(?=[a-zA-Z])/gm)
-  const parsedVars = variables.map((el) => {
-    const varName = /[\w-]*(?==)/gm.exec(el)[0]
-    const value = /(?<=")[\w\s.:\/,-]*(?=")/gm.exec(el)[0]
-    return { [varName]: value }
-  })
-  return parsedVars
+import { extractVars, getVars } from '../../utils/extractXmlVars'
+
+const neededVars = {
+  height: 'height',
+  width: 'width',
+  id: 'id',
+}
+
+const svgToRnSvgVars = {
+  height: str => (/^[\d.,]+/g.exec(str) || [])[0],
+  width: str => (/^[\d.,]+/g.exec(str) || [])[0],
+  id: str => str,
+}
+
+export default function (tagWithAttributes) {
+  const allVars = extractVars(tagWithAttributes)
+  return getVars({ allVars, neededVars, svgToRnSvgVars })
 }
