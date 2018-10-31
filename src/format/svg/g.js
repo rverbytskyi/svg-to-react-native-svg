@@ -23,7 +23,7 @@ const svgToRnSvgVars = {
   transform: str => str,
 }
 
-export default function (tagWithAttributes) {
-  const allVars = extractVars(tagWithAttributes)
+export default function ({ tagWithAttributes, tag, styles }) {
+  const allVars = extractVars({ tagWithAttributes, tag, styles })
   return postProcessColors(getVars({ allVars, neededVars, svgToRnSvgVars }))
 }

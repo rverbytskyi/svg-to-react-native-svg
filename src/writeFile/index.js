@@ -7,10 +7,10 @@ import Ast from './Ast'
 
 export function transformFile(file) {
   const svgAst = processSvg(file)
-  console.log(JSON.stringify(svgAst.content))
+  console.log(JSON.stringify(svgAst))
   const values = {
     [templateVars[0]]: format[templateVars[0]]({
-      dependencies: svgAst.info.imports,
+      dependencies: svgAst.general.imports,
     }),
     [templateVars[1]]: 'svgPart',
   }
@@ -49,7 +49,7 @@ function getTabs(varIndex) {
 
 function processSvg(file) {
   let svgPart = removeHeader(file)
-  const svgArray = svgPart.split(/(?=<)|(?=\/>)/)
+  const svgArray = svgPart.split(/(?=<)(?!<\/style)|(?=\/>)/)
   const SvgAst = new Ast(svgArray)
   SvgAst.createAst()
   return SvgAst.svgAst

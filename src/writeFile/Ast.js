@@ -1,4 +1,5 @@
 import _findIndex from 'lodash/findIndex'
+import { extractStyleVariables } from '../utils/extractXmlVars'
 
 import format from '../format'
 
@@ -6,14 +7,16 @@ class Ast {
   constructor(array) {
     this.array = array
     this.ast = {
-      info: {
+      general: {
         type: 'svg',
         imports: [],
+        styles: {},
       },
       content: []
     }
     this.layers = []
     this.layerIndex = 0
+    this.prepareGeneral()
   }
 
   getTag = (str) => {
@@ -21,11 +24,7 @@ class Ast {
   }
 
   getClearTag = (str) => {
-    const tag = (/(?<=^<)\w*(?=>?)/.exec(str) || [''])[0]
-    if (tag && _findIndex(this.ast.info.imports, el => el === tag) === -1) {
-      this.ast.info.imports.push(tag)
-    }
-    return tag
+    return (/(?<=^<)\w*(?=>?)/.exec(str) || [''])[0]
   }
 
   createAst = () => {
@@ -35,12 +34,15 @@ class Ast {
       if (!rawTag) {
         continue
       }
+      const tag = this.getClearTag(rawTag)
+      if (tag === 'style') {
+        continue
+      }
       if (!this.layers[this.layerIndex]) {
-        const tag = this.getClearTag(rawTag)
         const formatTagAttributes = format[tag]
         let values = {}
         if (typeof formatTagAttributes === 'function') {
-          values = formatTagAttributes(el)
+          values = formatTagAttributes({ tagWithAttributes: el, tag, styles: this.ast.general.styles })
         }
         this.ast.content.push({
           tag,
@@ -54,11 +56,10 @@ class Ast {
       if (/(^<\/)|(^\/>)/.test(rawTag)) {
         this.layerIndex--
       } else {
-        const tag = this.getClearTag(rawTag)
         const formatTagAttributes = format[tag]
         let values = {}
         if (typeof formatTagAttributes === 'function') {
-          values = formatTagAttributes(el)
+          values = formatTagAttributes({ tagWithAttributes: el, tag, styles: this.ast.general.styles })
         }
         this.layers[this.layerIndex].children.push({
           tag,
@@ -69,6 +70,27 @@ class Ast {
         const childrenWithAddedChild = this.layers[this.layerIndex].children
         this.layers.push(childrenWithAddedChild[childrenWithAddedChild.length - 1])
         this.layerIndex++
+      }
+    }
+  }
+
+  prepareGeneral = () => {
+    for (let i = 0; i < this.array.length; i++) {
+      const el = this.array[i]
+      const rawTag = this.getTag(el)
+      if (!rawTag) {
+        continue
+      }
+      const tag = this.getClearTag(rawTag)
+      if (!tag) {
+        continue
+      }
+      if (tag !== 'style' && _findIndex(this.ast.general.imports, el => el === tag) === -1) {
+        this.ast.general.imports.push(tag)
+        continue
+      }
+      if (tag === 'style') {
+        this.ast.general.styles = { ...this.ast.general.styles, ...extractStyleVariables(this.array[i]) }
       }
     }
   }
